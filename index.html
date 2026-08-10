@@ -199,6 +199,7 @@
                 'save': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
                 'history': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>,
                 'shield': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+                'gdoc': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>,
                 'message': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
                 'search': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
                 'globe': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>,
@@ -306,7 +307,7 @@
         function App() {
             // State
             const [apiKey, setApiKey] = useState('');
-            const [modelName, setModelName] = useState('gemini-2.5-pro'); 
+            const [modelName, setModelName] = useState('gemini-3.5-flash'); 
             const [showHistory, setShowHistory] = useState(false); 
             const [toasts, setToasts] = useState([]);
             const [systemReady, setSystemReady] = useState(false);
@@ -344,10 +345,11 @@
                 if (storedKey) setApiKey(storedKey);
                 
                 const storedModel = safeStorage.getItem('tony_vibe_model');
-                if (storedModel && storedModel !== 'gemini-2.5-flash' && !storedModel.includes('exp')) { 
+                // 若偵測到舊版 2.5 或測試版(exp)模型，強制升級為 3.5-flash
+                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('exp')) { 
                      setModelName(storedModel);
                 } else {
-                     setModelName('gemini-2.5-pro');
+                     setModelName('gemini-3.5-flash');
                 }
 
                 const storedScenario = safeStorage.getItem('tony_vibe_scenario');
@@ -508,9 +510,20 @@
                     chat: chatMessages
                 };
                 
-                const newHistory = [newItem, ...history];
-                setHistory(newHistory);
-                safeStorage.setItem('tony_vibe_history', JSON.stringify(newHistory));
+                // 1. 使用 functional update 確保絕對不會受到 React 時間差影響
+                setHistory(prevHistory => {
+                    // 防呆：如果最新的一筆跟現在要存的一模一樣，就不重複存
+                    if (prevHistory.length > 0 && prevHistory[0].content === currResult.content && prevHistory[0].question === newItem.question) {
+                        return prevHistory;
+                    }
+                    
+                    const newHistory = [newItem, ...prevHistory];
+                    safeStorage.setItem('tony_vibe_history', JSON.stringify(newHistory));
+                    return newHistory;
+                });
+                
+                // 2. 自動幫使用者切換到歷史紀錄面板，立刻看見結果
+                setShowHistory(true);
                 
                 // Sync to Cloud
                 if (firebaseUser && window.fsSetDoc) {
@@ -523,9 +536,12 @@
 
             const deleteHistory = (id, e) => {
                 e.stopPropagation();
-                const newHistory = history.filter(item => item.id !== id);
-                setHistory(newHistory);
-                safeStorage.setItem('tony_vibe_history', JSON.stringify(newHistory));
+                
+                setHistory(prev => {
+                    const newHistory = prev.filter(item => item.id !== id);
+                    safeStorage.setItem('tony_vibe_history', JSON.stringify(newHistory));
+                    return newHistory;
+                });
                 
                 // Delete from Cloud
                 if (firebaseUser && window.fsDeleteDoc) {
@@ -815,9 +831,23 @@
             };
 
             const copyToClipboard = () => {
-                if (result?.content) {
-                    navigator.clipboard.writeText(result.content);
+                if (!result?.content) return;
+                try {
+                    // 使用相容性最高的 document.execCommand 避開 iFrame 權限問題
+                    const textArea = document.createElement("textarea");
+                    textArea.value = result.content;
+                    textArea.style.position = "fixed"; 
+                    textArea.style.opacity = "0";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand("copy");
+                    textArea.remove();
+                    
                     addToast("內容已複製", "success");
+                } catch (err) {
+                    console.error("Copy failed:", err);
+                    addToast("複製失敗，您的瀏覽器可能阻擋了剪貼簿功能", "error");
                 }
             };
             
@@ -826,6 +856,48 @@
                 const html = marked.parse(result.content);
                 exportToWord(html, `Tony_Viewpoint_${new Date().toISOString().slice(0,10)}.doc`);
                 addToast("檔案下載中...", "info");
+            };
+
+            const handleExportGoogleDoc = async () => {
+                if (!result?.content) return;
+                try {
+                    const htmlContent = marked.parse(result.content);
+                    
+                    // 建立一個暫時的 div 來容納 HTML 格式，並使用 execCommand 複製以保留樣式
+                    const tempDiv = document.createElement('div');
+                    tempDiv.contentEditable = true; // 允許選取與複製格式
+                    tempDiv.style.position = 'fixed';
+                    tempDiv.style.left = '-9999px'; // 藏在畫面外
+                    tempDiv.innerHTML = htmlContent;
+                    document.body.appendChild(tempDiv);
+                    
+                    // 選取 div 內的內容
+                    const range = document.createRange();
+                    range.selectNodeContents(tempDiv);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    
+                    // 執行複製
+                    const successful = document.execCommand('copy');
+                    
+                    // 清理
+                    selection.removeAllRanges();
+                    document.body.removeChild(tempDiv);
+                    
+                    if (successful) {
+                        window.open('https://docs.new', '_blank');
+                        addToast("✅ 格式已複製！請在開啟的 Google 文件中貼上 (Ctrl+V)", "success");
+                    } else {
+                        throw new Error("Copy command failed");
+                    }
+                } catch (err) {
+                    console.error("Export to Google Doc failed:", err);
+                    // 最後一層 Fallback：直接複製純文字
+                    copyToClipboard();
+                    window.open('https://docs.new', '_blank');
+                    addToast("請在開啟的 Google 文件中貼上內容 (Ctrl+V)", "info");
+                }
             };
 
             const getFileIcon = (type) => {
@@ -1050,6 +1122,7 @@
                                             <div className="flex gap-2">
                                                 <button onClick={() => addToHistory(result)} className="text-slate-500 hover:text-amber-600 flex items-center gap-1 text-sm font-medium transition-colors"><Icon name="save" size={16} /> 儲存</button>
                                                 <button onClick={handleExportWord} className="text-slate-500 hover:text-blue-600 flex items-center gap-1 text-sm font-medium transition-colors"><Icon name="download" size={16} /> 匯出 Word</button>
+                                                <button onClick={handleExportGoogleDoc} className="text-slate-500 hover:text-blue-500 flex items-center gap-1 text-sm font-medium transition-colors"><Icon name="gdoc" size={16} /> 匯出 Google Doc</button>
                                                 <button onClick={copyToClipboard} className="text-slate-500 hover:text-green-600 flex items-center gap-1 text-sm font-medium transition-colors"><Icon name="copy" size={16} /> 複製</button>
                                             </div>
                                         </div>

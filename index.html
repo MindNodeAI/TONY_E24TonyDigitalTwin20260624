@@ -307,7 +307,7 @@
         function App() {
             // State
             const [apiKey, setApiKey] = useState('');
-            const [modelName, setModelName] = useState('gemini-3.5-flash'); 
+            const [modelName, setModelName] = useState('gemini-3.7-flash'); 
             const [showHistory, setShowHistory] = useState(false); 
             const [toasts, setToasts] = useState([]);
             const [systemReady, setSystemReady] = useState(false);
@@ -345,11 +345,11 @@
                 if (storedKey) setApiKey(storedKey);
                 
                 const storedModel = safeStorage.getItem('tony_vibe_model');
-                // 若偵測到舊版 2.5 或測試版(exp)模型，強制升級為 3.5-flash
-                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('exp')) { 
+                // 若偵測到舊版 2.5, 3.5 或測試版(exp)模型，強制升級為 3.7-flash
+                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('3.5') && !storedModel.includes('exp')) { 
                      setModelName(storedModel);
                 } else {
-                     setModelName('gemini-3.5-flash');
+                     setModelName('gemini-3.7-flash');
                 }
 
                 const storedScenario = safeStorage.getItem('tony_vibe_scenario');

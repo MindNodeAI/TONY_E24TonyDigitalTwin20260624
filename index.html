@@ -283,6 +283,41 @@
             const [chatLoading, setChatLoading] = useState(false);
             const chatEndRef = useRef(null);
 
+            // Chat Resize State
+            const [chatHeight, setChatHeight] = useState(350);
+            const chatDragState = useRef({ isDragging: false, startY: 0, startHeight: 0 });
+
+            const handleChatResize = useCallback((e) => {
+                if (!chatDragState.current.isDragging) return;
+                // 觸控螢幕滑動時避免整個畫面捲動
+                if (e.cancelable && e.type.includes('touch')) e.preventDefault();
+                const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                const deltaY = chatDragState.current.startY - currentY;
+                // 往上拖曳 currentY 會變小，deltaY 為正，高度增加
+                const newHeight = Math.max(250, Math.min(window.innerHeight * 0.85, chatDragState.current.startHeight + deltaY));
+                setChatHeight(newHeight);
+            }, []);
+
+            const stopChatResize = useCallback(() => {
+                chatDragState.current.isDragging = false;
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', handleChatResize);
+                document.removeEventListener('mouseup', stopChatResize);
+                document.removeEventListener('touchmove', handleChatResize);
+                document.removeEventListener('touchend', stopChatResize);
+            }, [handleChatResize]);
+
+            const startChatResize = useCallback((e) => {
+                chatDragState.current.isDragging = true;
+                chatDragState.current.startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                chatDragState.current.startHeight = chatHeight;
+                document.body.style.userSelect = 'none'; // 避免拖曳時反白文字
+                document.addEventListener('mousemove', handleChatResize, { passive: false });
+                document.addEventListener('mouseup', stopChatResize);
+                document.addEventListener('touchmove', handleChatResize, { passive: false });
+                document.addEventListener('touchend', stopChatResize);
+            }, [chatHeight, handleChatResize, stopChatResize]);
+
             // History & Cloud State
             const [showHistory, setShowHistory] = useState(false);
             const [history, setHistory] = useState([]);
@@ -742,8 +777,19 @@
                                             
                                             {/* Chat Section */}
                                             <div className="mt-auto bg-slate-100/50 p-2 md:p-4 pb-0 shrink-0">
-                                                <div className="max-w-3xl mx-auto w-full flex flex-col h-[40vh] min-h-[300px] max-h-[80vh] resize-y overflow-hidden bg-white border-x border-t border-slate-200 rounded-t-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] relative">
-                                                    <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between text-slate-700 font-bold text-xs uppercase tracking-wider bg-white shrink-0">
+                                                <div className="max-w-3xl mx-auto w-full flex flex-col min-h-[250px] max-h-[85vh] overflow-hidden bg-white border-x border-t border-slate-200 rounded-t-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] relative" style={{ height: `${chatHeight}px` }}>
+                                                    
+                                                    {/* Custom Top Drag Handle */}
+                                                    <div 
+                                                        className="w-full h-4 cursor-ns-resize flex items-center justify-center bg-slate-50 hover:bg-slate-200 transition-colors shrink-0 group z-10"
+                                                        onMouseDown={startChatResize}
+                                                        onTouchStart={startChatResize}
+                                                        title="向上拖曳拉高對話框"
+                                                    >
+                                                        <div className="w-12 h-1 bg-slate-300 group-hover:bg-amber-400 rounded-full transition-colors" />
+                                                    </div>
+
+                                                    <div className="px-4 py-2 border-b border-slate-200 flex items-center justify-between text-slate-700 font-bold text-xs uppercase tracking-wider bg-white shrink-0">
                                                         <div className="flex items-center gap-2">
                                                             <Icon name="message" size={16} className="text-amber-500"/> TONY 諮詢室
                                                         </div>
@@ -755,7 +801,7 @@
                                                         )}
                                                     </div>
                                                     <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50/50">
-                                                        {chatMessages.length === 0 && <p className="text-center text-slate-400 text-xs mt-10 opacity-70">對報告有疑問？直接在這裡發問！<br/><span className="text-[10px] mt-1 inline-block">(您可以拖曳右下角來調整此對話框的高度)</span></p>}
+                                                        {chatMessages.length === 0 && <p className="text-center text-slate-400 text-xs mt-10 opacity-70">對報告有疑問？直接在這裡發問！<br/><span className="text-[10px] mt-1 inline-block">(您可以直接拖曳視窗正上方的橫條，往上拉高對話框)</span></p>}
                                                         {chatMessages.map((msg, idx) => (
                                                             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-fade-in-up`} style={{animationDuration: '0.2s'}}>
                                                                 <span className="text-[10px] text-slate-400 mb-1 px-1 font-medium">{msg.role === 'user' ? currentActiveRole.split(' ')[0] : 'TONY 老師'}</span>

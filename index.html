@@ -21,6 +21,14 @@
     <!-- Mammoth.js for Word extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     
+    <!-- KaTeX for Math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Mermaid for Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+    
     <!-- Tailwind Config -->
     <script>
         tailwind.config = {
@@ -287,6 +295,67 @@
             const [chatHeight, setChatHeight] = useState(350);
             const chatDragState = useRef({ isDragging: false, startY: 0, startHeight: 0 });
 
+            // Refs for rendering Advanced Content (Mermaid & KaTeX)
+            const resultContentRef = useRef(null);
+            const chatMessagesRef = useRef(null);
+
+            const renderAdvancedContent = useCallback((containerElement) => {
+                if (!containerElement) return;
+
+                // 1. Process Mermaid blocks
+                const mermaidCodes = containerElement.querySelectorAll('code.language-mermaid');
+                let hasMermaid = false;
+                mermaidCodes.forEach(codeNode => {
+                    const pre = codeNode.parentElement;
+                    if (pre && pre.tagName === 'PRE' && !pre.classList.contains('mermaid-processed')) {
+                        pre.classList.add('mermaid-processed');
+                        const div = document.createElement('div');
+                        div.className = 'mermaid flex justify-center my-6 w-full overflow-x-auto';
+                        div.textContent = codeNode.textContent;
+                        pre.parentNode.replaceChild(div, pre);
+                        hasMermaid = true;
+                    }
+                });
+
+                if (hasMermaid && window.mermaid) {
+                    try {
+                        window.mermaid.run({ nodes: containerElement.querySelectorAll('.mermaid') });
+                    } catch (e) {
+                        console.warn("Mermaid error:", e);
+                    }
+                }
+
+                // 2. Process Math (KaTeX)
+                if (window.renderMathInElement) {
+                    window.renderMathInElement(containerElement, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false,
+                        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "div.mermaid"]
+                    });
+                }
+            }, []);
+
+            useEffect(() => {
+                if (window.mermaid) window.mermaid.initialize({ startOnLoad: false, theme: 'default' });
+            }, []);
+
+            useEffect(() => {
+                if (result && resultContentRef.current) {
+                    setTimeout(() => renderAdvancedContent(resultContentRef.current), 0);
+                }
+            }, [result, renderAdvancedContent]);
+
+            useEffect(() => {
+                if (chatMessages.length > 0 && chatMessagesRef.current) {
+                    setTimeout(() => renderAdvancedContent(chatMessagesRef.current), 0);
+                }
+            }, [chatMessages, renderAdvancedContent]);
+
             const handleChatResize = useCallback((e) => {
                 if (!chatDragState.current.isDragging) return;
                 // 觸控螢幕滑動時避免整個畫面捲動
@@ -413,6 +482,7 @@
                     const systemPrompt = `[SYSTEM INSTRUCTION - 數位孿生 V2.9.17 核心協議]
 你現在**完全就是** TONY 楊文澤老師本人。你是一位經驗豐富、溫暖善良且熱愛創新的資深顧問。
 **[聯網搜尋指令]** 當使用者輸入包含網址時，請務必使用 Google Search 工具查證。
+**[支援格式]** 系統支援 Mermaid 圖表 (使用 \`\`\`mermaid 作為代碼區塊) 以及 LaTeX 數學公式 (使用 $$...$$ 或 $...$)。請在適當時機運用圖表與公式增強您的解析與觀點。若使用行內數學公式，請在 $ 符號前後加上空白，以免被 Markdown 錯誤解析。
 **[輸出結構]**
 ## 💡 TONY 的初步觀點
 ## 🚀 TONY 的深度洞察 (提出底層邏輯，用粗體強調)
@@ -772,7 +842,7 @@
                                                         <div className="whitespace-pre-wrap leading-relaxed opacity-90">{result.thought}</div>
                                                     </div>
                                                 )}
-                                                <div className="prose prose-slate prose-img:rounded-xl prose-a:text-blue-600 max-w-none" dangerouslySetInnerHTML={{ __html: marked.parse(result.content) }} />
+                                                <div ref={resultContentRef} className="prose prose-slate prose-img:rounded-xl prose-a:text-blue-600 max-w-none" dangerouslySetInnerHTML={{ __html: marked.parse(result.content) }} />
                                             </div>
                                             
                                             {/* Chat Section */}
@@ -800,7 +870,7 @@
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50/50">
+                                                    <div ref={chatMessagesRef} className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50/50">
                                                         {chatMessages.length === 0 && <p className="text-center text-slate-400 text-xs mt-10 opacity-70">對報告有疑問？直接在這裡發問！<br/><span className="text-[10px] mt-1 inline-block">(您可以直接拖曳視窗正上方的橫條，往上拉高對話框)</span></p>}
                                                         {chatMessages.map((msg, idx) => (
                                                             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-fade-in-up`} style={{animationDuration: '0.2s'}}>

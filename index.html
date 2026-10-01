@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TONY老師您的觀點是什麼? | Digital Twin V2.9.17 (Optimized)</title>
+    <title>TONY老師您的觀點是什麼? | Digital Twin V2.9.18 (Enterprise Edition)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -15,7 +15,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Markdown Parser (使用穩定的 UMD 版本) -->
+    <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
 
     <!-- Mammoth.js for Word extraction -->
@@ -24,8 +24,7 @@
     <!-- KaTeX for Math -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
+    
     <!-- Mermaid for Charts -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
     
@@ -37,29 +36,17 @@
                     colors: {
                         slate: { 750: '#2d3748', 850: '#1a202c', 900: '#0f172a' },
                         amber: { 350: '#fbbf24' },
-                        blue: { 50: '#eff6ff', 100: '#dbeafe', 600: '#2563eb' },
-                        green: { 50: '#f0fdf4', 600: '#16a34a' },
-                        red: { 50: '#fef2f2', 100: '#fee2e2', 600: '#dc2626' },
-                        purple: { 50: '#faf5ff', 600: '#9333ea' }
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans TC', 'Microsoft JhengHei', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'Noto Sans TC', 'Microsoft JhengHei', 'sans-serif'] },
                     animation: {
                         'pulse-slow': 'pulse 3s infinite',
-                        'spin-slow': 'spin 3s linear infinite',
-                        'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
-                        'slide-in-right': 'slideInRight 0.3s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-in-right': 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        slideInRight: {
-                            '0%': { opacity: '0', transform: 'translateX(20px)' },
-                            '100%': { opacity: '1', transform: 'translateX(0)' },
-                        }
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        slideInRight: { '0%': { opacity: '0', transform: 'translateX(20px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+                        slideInDown: { '0%': { transform: 'translate(-50%, -100%)', opacity: '0' }, '100%': { transform: 'translate(-50%, 0)', opacity: '1' } }
                     }
                 }
             }
@@ -73,9 +60,6 @@
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
         
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; }
-        
         /* Typography Polish */
         .prose h1, .prose h2, .prose h3 { color: #0f172a; font-weight: 800; margin-top: 1.8em; margin-bottom: 0.8em; letter-spacing: -0.025em; }
         .prose h2 { border-bottom: 2px solid #f1f5f9; padding-bottom: 0.3em; }
@@ -88,52 +72,26 @@
         /* Thinking Process Block */
         .thinking-block {
             background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-            border: 1px solid #e2e8f0;
-            border-left: 4px solid #64748b;
-            padding: 1.25rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            font-size: 0.9em;
-            color: #475569;
-            font-family: 'Courier New', Courier, monospace;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0; border-left: 4px solid #64748b;
+            padding: 1.25rem; margin-bottom: 2rem; border-radius: 8px;
+            font-size: 0.9em; color: #475569; font-family: 'Courier New', Courier, monospace;
         }
-        .thinking-header { font-weight: 700; color: #475569; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.85em; }
         
         /* Chat UI */
-        .chat-bubble { max-width: 88%; padding: 12px 16px; border-radius: 16px; font-size: 0.95em; line-height: 1.6; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .chat-bubble { max-width: 88%; padding: 12px 16px; border-radius: 16px; font-size: 0.95em; line-height: 1.6; margin-bottom: 12px; }
         .chat-user { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); color: #0f172a; align-self: flex-end; border-bottom-right-radius: 4px; }
         .chat-bot { background-color: #ffffff; border: 1px solid #e2e8f0; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .chat-self { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1px solid #e9d5ff; color: #581c87; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        /* Full Screen Loader */
-        .full-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-
-        /* Glassmorphism Header */
-        .glass-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        @keyframes slideInDown {
-            from { transform: translate(-50%, -100%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
+        /* Overlays & Toast */
+        .full-loader { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .toast-top { animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; left: 50%; }
         
-        /* Base input removal for iOS */
         input, textarea, select { -webkit-appearance: none; border-radius: 0; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased h-screen flex flex-col overflow-hidden selection:bg-amber-200 selection:text-amber-900">
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -154,11 +112,9 @@
                     return await signInAnonymously(window.firebaseAuth);
                 };
 
-                window.fsDoc = doc;
-                window.fsSetDoc = setDoc;
-                window.fsCollection = collection;
-                window.fsGetDocs = getDocs;
-                window.fsDeleteDoc = deleteDoc;
+                // Attach to window for React to use
+                window.fsDoc = doc; window.fsSetDoc = setDoc; 
+                window.fsCollection = collection; window.fsGetDocs = getDocs; window.fsDeleteDoc = deleteDoc;
             }
         } catch (e) {
             console.error("Firebase Init Error:", e);
@@ -168,7 +124,7 @@
     <div id="root" class="h-full flex flex-col w-full"></div>
 
     <script type="text/babel" data-presets="react,env" data-type="module">
-        const { useState, useEffect, useRef, useLayoutEffect, useCallback } = React;
+        const { useState, useEffect, useRef, useCallback } = React;
 
         const TONY_PROFILE = {
             name: "TONY 楊文澤",
@@ -178,23 +134,15 @@
             logoUrl: "https://i.postimg.cc/fT2sQW09/1.png"
         };
 
-        const SCENARIOS = [
-            "企業諮詢 (Business Consulting)", "學術演講 (Academic Speech)", "生活建議 (Life Advice)", 
-            "趨勢分析 (Trend Analysis)", "內容摘要與觀點 (Content Summary)", "課程大綱 (Course Outline)", 
-            "私人閒聊 (Private Chat)", "投資理財 (Investment & Wealth)", "其他 (由使用者自填)"
-        ];
-
-        const INQUIRER_ROLES = [
-            "企業客戶/老闆 (Client)", "學生/學員 (Student)", "創業夥伴 (Co-founder)", 
-            "一般大眾 (General Public)", "好朋友/同學 (Close Friend)", "我自己 (Self Reflection)", 
-            "其他 (由使用者自填)"
-        ];
+        const SCENARIOS = ["企業諮詢", "學術演講", "生活建議", "趨勢分析", "內容摘要與觀點", "課程大綱", "私人閒聊", "投資理財", "其他 (由使用者自填)"];
+        const INQUIRER_ROLES = ["企業客戶/老闆", "學生/學員", "創業夥伴", "一般大眾", "好朋友/同學", "我自己", "其他 (由使用者自填)"];
 
         const safeStorage = {
             getItem: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
             setItem: (key, value) => { try { localStorage.setItem(key, value); } catch (e) {} }
         };
 
+        // Icons Component
         const Icon = ({ name, size = 20, className = "" }) => {
             const icons = {
                 'menu': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
@@ -203,7 +151,6 @@
                 'key': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/><path d="M6.2 13 8 11.2"/><path d="M4.4 14.8 2.6 13"/></svg>,
                 'send': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
                 'copy': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
-                'trash': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
                 'settings': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
                 'check': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>,
                 'bot': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>,
@@ -211,9 +158,7 @@
                 'paperclip': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>,
                 'x': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
                 'file': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
-                'image': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
                 'download': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-                'upload': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
                 'cloud': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>,
                 'save': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>,
                 'gdoc': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>,
@@ -225,6 +170,47 @@
                 'eye': <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
             };
             return icons[name] || null;
+        };
+
+        const Toast = ({ message, type = 'success', onClose }) => {
+            useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
+            const config = {
+                success: { color: 'bg-green-50 text-green-800 border-green-200', icon: 'check' },
+                info: { color: 'bg-blue-50 text-blue-800 border-blue-200', icon: 'globe' },
+                warning: { color: 'bg-amber-50 text-amber-800 border-amber-200', icon: 'search' },
+                error: { color: 'bg-red-50 text-red-800 border-red-200', icon: 'alert' }
+            };
+            return (
+                <div className={`fixed z-[100] px-5 py-3.5 rounded-xl border shadow-xl flex items-center gap-3 backdrop-blur-md transform -translate-x-1/2 toast-top ${config[type].color} top-6 md:top-8`}>
+                    <Icon name={config[type].icon} size={18} />
+                    <span className="font-bold text-sm tracking-wide">{message}</span>
+                </div>
+            );
+        };
+
+        // 核心：防呆容錯 JSON 攔截與解析器
+        const parseRobustJSON = (rawText) => {
+            try {
+                return JSON.parse(rawText);
+            } catch (e1) {
+                console.warn("Direct JSON parse failed, attempting auto-recovery pipeline...");
+                try {
+                    // 正則擷取 { } 之間的內容，剔除前後 Markdown 語法 (如 ```json)
+                    const match = rawText.match(/\{[\s\S]*\}/);
+                    if (match) {
+                        // 移除潛在的不可見控制字元
+                        const cleanStr = match[0].replace(/[\u0000-\u0019]+/g,"");
+                        return JSON.parse(cleanStr);
+                    }
+                } catch (e2) {
+                    console.error("Self-healing JSON parsing failed:", e2);
+                }
+            }
+            // 極端異常處理 (Fallback)
+            return {
+                thought: "⚠️ 系統格式解析異常，啟動備援降級機制。原始資料已保留。",
+                content: rawText.replace(/```json/g, '').replace(/```/g, '').trim()
+            };
         };
 
         const fileToGenerativePart = (file) => {
@@ -242,34 +228,16 @@
                 };
                 reader.onerror = reject;
                 file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
-                    ? reader.readAsArrayBuffer(file) 
-                    : reader.readAsDataURL(file);
+                    ? reader.readAsArrayBuffer(file) : reader.readAsDataURL(file);
             });
         };
 
-        const Toast = ({ message, type = 'success', onClose }) => {
-            useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
-            const config = {
-                success: { color: 'bg-green-50/95 text-green-800 border-green-200', icon: 'check' },
-                info: { color: 'bg-blue-50/95 text-blue-800 border-blue-200', icon: 'globe' },
-                warning: { color: 'bg-amber-50/95 text-amber-800 border-amber-200', icon: 'search' },
-                error: { color: 'bg-red-50/95 text-red-800 border-red-200', icon: 'alert' }
-            };
-            return (
-                <div className={`fixed z-[100] px-5 py-3.5 rounded-xl border shadow-xl flex items-center gap-3 backdrop-blur-md transform -translate-x-1/2 toast-top ${config[type].color} top-6 md:top-8`}>
-                    <Icon name={config[type].icon} size={18} />
-                    <span className="font-bold text-sm tracking-wide">{message}</span>
-                </div>
-            );
-        };
-
         function App() {
-            // UI State
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
             const [isConfigOpen, setIsConfigOpen] = useState(false);
             const [toasts, setToasts] = useState([]);
             
-            // Core Configs
+            // Core Configs (Enforced defaults for stability)
             const [apiKey, setApiKey] = useState('');
             const [modelName, setModelName] = useState('gemini-3.8-flash'); 
             const [scenario, setScenario] = useState(SCENARIOS[0]);
@@ -277,32 +245,35 @@
             const [inquirerRole, setInquirerRole] = useState(INQUIRER_ROLES[0]); 
             const [customRole, setCustomRole] = useState('');
             
-            // Interaction State
+            // App State
             const [input, setInput] = useState('');
             const [attachments, setAttachments] = useState([]); 
             const [loading, setLoading] = useState(false);
             const [result, setResult] = useState(null); 
-            const [error, setError] = useState(null); 
             const [isSearchActive, setIsSearchActive] = useState(false); 
             
             // Chat State
             const [chatMessages, setChatMessages] = useState([]);
             const [chatInput, setChatInput] = useState('');
             const [chatLoading, setChatLoading] = useState(false);
-            const chatEndRef = useRef(null);
-
-            // Chat Resize State
             const [chatHeight, setChatHeight] = useState(350);
+            
+            const chatEndRef = useRef(null);
             const chatDragState = useRef({ isDragging: false, startY: 0, startHeight: 0 });
-
-            // Refs for rendering Advanced Content (Mermaid & KaTeX)
             const resultContentRef = useRef(null);
             const chatMessagesRef = useRef(null);
+            const fileInputRef = useRef(null);
+            const textareaRef = useRef(null);
+
+            // History & Cloud State
+            const [showHistory, setShowHistory] = useState(false);
+            const [history, setHistory] = useState([]);
+            const [firebaseUser, setFirebaseUser] = useState(null);
+            const [isSyncing, setIsSyncing] = useState(false);
+            const appId = 'tony-digital-twin';
 
             const renderAdvancedContent = useCallback((containerElement) => {
                 if (!containerElement) return;
-
-                // 1. Process Mermaid blocks
                 const mermaidCodes = containerElement.querySelectorAll('code.language-mermaid');
                 let hasMermaid = false;
                 mermaidCodes.forEach(codeNode => {
@@ -316,181 +287,118 @@
                         hasMermaid = true;
                     }
                 });
-
                 if (hasMermaid && window.mermaid) {
-                    try {
-                        window.mermaid.run({ nodes: containerElement.querySelectorAll('.mermaid') });
-                    } catch (e) {
-                        console.warn("Mermaid error:", e);
-                    }
+                    try { window.mermaid.run({ nodes: containerElement.querySelectorAll('.mermaid') }); } catch (e) { console.warn("Mermaid err:", e); }
                 }
-
-                // 2. Process Math (KaTeX)
+                // KaTeX (Math) fallback rendering
                 if (window.renderMathInElement) {
-                    window.renderMathInElement(containerElement, {
-                        delimiters: [
-                            {left: '$$', right: '$$', display: true},
-                            {left: '$', right: '$', display: false},
-                            {left: '\\(', right: '\\)', display: false},
-                            {left: '\\[', right: '\\]', display: true}
-                        ],
-                        throwOnError: false,
-                        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "div.mermaid"]
-                    });
+                    try {
+                        window.renderMathInElement(containerElement, {
+                            delimiters: [ {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false} ],
+                            throwOnError: false, ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "div.mermaid"]
+                        });
+                    } catch (e) { console.warn("KaTeX err:", e); }
                 }
             }, []);
 
-            useEffect(() => {
-                if (window.mermaid) window.mermaid.initialize({ startOnLoad: false, theme: 'default' });
-            }, []);
+            useEffect(() => { if (window.mermaid) window.mermaid.initialize({ startOnLoad: false, theme: 'default' }); }, []);
+            useEffect(() => { if (result && resultContentRef.current) setTimeout(() => renderAdvancedContent(resultContentRef.current), 0); }, [result, renderAdvancedContent]);
+            useEffect(() => { if (chatMessages.length > 0 && chatMessagesRef.current) setTimeout(() => renderAdvancedContent(chatMessagesRef.current), 0); }, [chatMessages, renderAdvancedContent]);
 
             useEffect(() => {
-                if (result && resultContentRef.current) {
-                    setTimeout(() => renderAdvancedContent(resultContentRef.current), 0);
-                }
-            }, [result, renderAdvancedContent]);
-
-            useEffect(() => {
-                if (chatMessages.length > 0 && chatMessagesRef.current) {
-                    setTimeout(() => renderAdvancedContent(chatMessagesRef.current), 0);
-                }
-            }, [chatMessages, renderAdvancedContent]);
-
-            const handleChatResize = useCallback((e) => {
-                if (!chatDragState.current.isDragging) return;
-                // 觸控螢幕滑動時避免整個畫面捲動
-                if (e.cancelable && e.type.includes('touch')) e.preventDefault();
-                const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                const deltaY = chatDragState.current.startY - currentY;
-                // 往上拖曳 currentY 會變小，deltaY 為正，高度增加
-                const newHeight = Math.max(250, Math.min(window.innerHeight * 0.85, chatDragState.current.startHeight + deltaY));
-                setChatHeight(newHeight);
-            }, []);
-
-            const stopChatResize = useCallback(() => {
-                chatDragState.current.isDragging = false;
-                document.body.style.userSelect = '';
-                document.removeEventListener('mousemove', handleChatResize);
-                document.removeEventListener('mouseup', stopChatResize);
-                document.removeEventListener('touchmove', handleChatResize);
-                document.removeEventListener('touchend', stopChatResize);
-            }, [handleChatResize]);
-
-            const startChatResize = useCallback((e) => {
-                chatDragState.current.isDragging = true;
-                chatDragState.current.startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-                chatDragState.current.startHeight = chatHeight;
-                document.body.style.userSelect = 'none'; // 避免拖曳時反白文字
-                document.addEventListener('mousemove', handleChatResize, { passive: false });
-                document.addEventListener('mouseup', stopChatResize);
-                document.addEventListener('touchmove', handleChatResize, { passive: false });
-                document.addEventListener('touchend', stopChatResize);
-            }, [chatHeight, handleChatResize, stopChatResize]);
-
-            // History & Cloud State
-            const [showHistory, setShowHistory] = useState(false);
-            const [history, setHistory] = useState([]);
-            const [firebaseUser, setFirebaseUser] = useState(null);
-            const [isSyncing, setIsSyncing] = useState(false);
-            
-            const appId = 'tony-digital-twin';
-            const fileInputRef = useRef(null);
-            const textareaRef = useRef(null);
-
-            useEffect(() => {
+                // Persistent State Retrieval
                 const storedKey = safeStorage.getItem('tony_vibe_api_key');
                 if (storedKey) setApiKey(storedKey);
                 
                 const storedModel = safeStorage.getItem('tony_vibe_model');
-                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('3.5') && !storedModel.includes('3.7') && !storedModel.includes('exp')) { 
-                     setModelName(storedModel);
-                } else {
-                     setModelName('gemini-3.8-flash');
-                }
+                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('3.5')) setModelName(storedModel);
+                else setModelName('gemini-3.8-flash'); // Auto-upgrade
 
                 setScenario(safeStorage.getItem('tony_vibe_scenario') || SCENARIOS[0]);
                 setInquirerRole(safeStorage.getItem('tony_vibe_role') || INQUIRER_ROLES[0]);
 
-                let localHistory = JSON.parse(safeStorage.getItem('tony_vibe_history') || '[]');
-
-                if (window.firebaseSignIn && window.firebaseDb) {
-                    setIsSyncing(true);
-                    window.firebaseSignIn().then(cred => {
-                        setFirebaseUser(cred.user);
-                        return window.fsGetDocs(window.fsCollection(window.firebaseDb, 'artifacts', appId, 'users', cred.user.uid, 'history'));
-                    }).then(snapshot => {
-                        const cloudHistory = snapshot ? snapshot.docs.map(doc => doc.data()) : [];
-                        const mergedMap = new Map([...localHistory, ...cloudHistory].map(item => [item.id, item]));
-                        const mergedArray = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
-                        setHistory(mergedArray);
-                        if (mergedArray.length > 0) safeStorage.setItem('tony_vibe_history', JSON.stringify(mergedArray));
-                    }).catch(e => {
-                        console.error("Firebase Error", e);
+                // Initial History Sync
+                const loadInitialData = async () => {
+                    let localHistory = JSON.parse(safeStorage.getItem('tony_vibe_history') || '[]');
+                    if (window.firebaseSignIn && window.firebaseDb) {
+                        setIsSyncing(true);
+                        try {
+                            const cred = await window.firebaseSignIn();
+                            setFirebaseUser(cred.user);
+                            const snapshot = await window.fsGetDocs(window.fsCollection(window.firebaseDb, 'artifacts', appId, 'users', cred.user.uid, 'history'));
+                            const cloudHistory = snapshot ? snapshot.docs.map(doc => doc.data()) : [];
+                            const mergedMap = new Map([...localHistory, ...cloudHistory].map(item => [item.id, item]));
+                            const mergedArray = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+                            setHistory(mergedArray);
+                            safeStorage.setItem('tony_vibe_history', JSON.stringify(mergedArray));
+                        } catch (e) {
+                            console.error("Firebase Sync Error", e);
+                            setHistory(localHistory);
+                        } finally {
+                            setIsSyncing(false);
+                        }
+                    } else {
                         setHistory(localHistory);
-                    }).finally(() => setIsSyncing(false));
-                } else {
-                    setHistory(localHistory);
-                }
+                    }
+                };
+                loadInitialData();
             }, []);
 
             useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages, chatLoading]);
-            
             useEffect(() => { if (apiKey) safeStorage.setItem('tony_vibe_api_key', apiKey); }, [apiKey]);
             useEffect(() => { safeStorage.setItem('tony_vibe_model', modelName); }, [modelName]);
-            useEffect(() => { safeStorage.setItem('tony_vibe_scenario', scenario); }, [scenario]);
-            useEffect(() => { safeStorage.setItem('tony_vibe_role', inquirerRole); }, [inquirerRole]);
-
-            useEffect(() => {
+            
+            const handleInputResizeAndSearchCheck = useCallback(() => {
                 const hasUrl = /(https?:\/\/[^\s]+)/g.test(input);
-                if (hasUrl && !isSearchActive) { setIsSearchActive(true); addToast("已偵測到連結，將啟用聯網搜尋", "info"); }
-                else if (!hasUrl && isSearchActive) setIsSearchActive(false);
+                if (hasUrl && !isSearchActive) { setIsSearchActive(true); addToast("已啟用聯網搜尋", "info"); }
+                else if (!hasUrl && isSearchActive) { setIsSearchActive(false); }
 
                 if (textareaRef.current) {
                     textareaRef.current.style.height = 'auto'; 
                     textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
                 }
-            }, [input]);
+            }, [input, isSearchActive]);
+
+            useEffect(() => { handleInputResizeAndSearchCheck(); }, [handleInputResizeAndSearchCheck]);
 
             const addToast = useCallback((message, type = 'success') => {
                 const id = Date.now();
                 setToasts(prev => [...prev, { id, message, type }]);
             }, []);
-
-            const removeToast = useCallback((id) => {
-                setToasts(prev => prev.filter(t => t.id !== id));
-            }, []);
-
-            const handleReset = () => {
-                setInput(''); setAttachments([]); setResult(null); setChatMessages([]); setError(null); setIsSearchActive(false);
-                if (fileInputRef.current) fileInputRef.current.value = '';
-                if (textareaRef.current) textareaRef.current.style.height = 'auto';
-                addToast("已清空，請重新提問", "success");
-            };
+            const removeToast = useCallback((id) => setToasts(prev => prev.filter(t => t.id !== id)), []);
 
             const handleGenerate = async () => {
-                if (!apiKey) return addToast("請先展開 System Configuration 填寫 API Key", "error");
-                if (!input.trim() && attachments.length === 0) return addToast("請輸入文字或上傳檔案", "error");
+                if (!apiKey) return addToast("請展開 System Config 填寫 API Key", "error");
+                if (!input.trim() && attachments.length === 0) return addToast("請輸入文字或上傳檔案", "warning");
 
-                setLoading(true); setError(null); setResult(null); setChatMessages([]); 
-                if(window.innerWidth < 768) setIsMobileMenuOpen(false); // Close mobile menu if open
+                setLoading(true); setResult(null); setChatMessages([]); 
+                if(window.innerWidth < 768) setIsMobileMenuOpen(false);
 
                 try {
                     const activeScenario = scenario === "其他 (由使用者自填)" ? (customScenario || "自訂情境") : scenario;
                     const activeRole = inquirerRole === "其他 (由使用者自填)" ? (customRole || "自訂身分") : inquirerRole;
                     const attachmentParts = await Promise.all(attachments.map(fileToGenerativePart));
 
-                    const systemPrompt = `[SYSTEM INSTRUCTION - 數位孿生 V2.9.17 核心協議]
+                    // 核心 Prompt 重構 (嚴格 JSON 結構限制)
+                    const systemPrompt = `[SYSTEM INSTRUCTION - 數位孿生核心協議]
 你現在**完全就是** TONY 楊文澤老師本人。你是一位經驗豐富、溫暖善良且熱愛創新的資深顧問。
-**[聯網搜尋指令]** 當使用者輸入包含網址時，請務必使用 Google Search 工具查證。
-**[支援格式]** 系統支援 Mermaid 圖表 (使用 \`\`\`mermaid 作為代碼區塊) 以及 LaTeX 數學公式 (使用 $$...$$ 或 $...$)。請在適當時機運用圖表與公式增強您的解析與觀點。若使用行內數學公式，請在 $ 符號前後加上空白，以免被 Markdown 錯誤解析。
-**[輸出結構]**
-## 💡 TONY 的初步觀點
-## 🚀 TONY 的深度洞察 (提出底層邏輯，用粗體強調)
-**[社交對頻]** 提問者：${activeRole} | 情境：${activeScenario}
-<thought_process>
-1. 輸入檢核...
-2. 深度挖掘...
-</thought_process>`;
+**[聯網搜尋指令]** 若使用者輸入包含網址，務必使用 Google Search 工具查證。
+**[支援格式]** 支援 Mermaid 圖表 (\`\`\`mermaid) 及 LaTeX 數學公式 ($...$ 或 $$...$$)。
+
+**[輸出規範 (CRITICAL)]**
+你必須以純 JSON 格式輸出，絕對不要包含任何 Markdown 代碼塊 (如 \`\`\`json)。
+JSON 結構必須精確包含以下兩個欄位：
+{
+  "thought": "這裡填寫你的底層思考過程 (1. 輸入檢核... 2. 深度挖掘...)",
+  "content": "這裡填寫你要回覆使用者的主要內容，請使用 Markdown 語法排版，並包含：\n## 💡 TONY 的初步觀點\n## 🚀 TONY 的深度洞察"
+}
+範例輸出:
+{
+  "thought": "1. 分析使用者需求... 2. 連結行銷漏斗理論...",
+  "content": "## 💡 TONY 的初步觀點\n這是一個很好的問題... \n## 🚀 TONY 的深度洞察\n本質上..."
+}
+
+**[社交對頻]** 提問者：${activeRole} | 情境：${activeScenario}`;
 
                     const userParts = [];
                     if (input.trim()) userParts.push({ text: `(提問/內容)：${input}` });
@@ -502,34 +410,39 @@
                             contents: [{ parts: userParts }],
                             systemInstruction: { parts: [{ text: systemPrompt }] },
                             tools: [{ google_search: {} }],
-                            generationConfig: { temperature: 0.85, topK: 40, topP: 0.95, maxOutputTokens: 8192 }
+                            // 嚴格錨定輸出格式，減輕前端解析負擔
+                            generationConfig: { 
+                                temperature: 0.85, topK: 40, topP: 0.95, maxOutputTokens: 8192,
+                                responseMimeType: "application/json" 
+                            }
                         })
                     });
 
-                    if (!res.ok) throw new Error((await res.json()).error?.message || `API Error: ${res.status}`);
+                    if (!res.ok) throw new Error(`API Error: ${res.status}`);
                     const data = await res.json();
                     if (data.error) throw new Error(data.error.message);
-                    if (!data.candidates?.[0]?.content?.parts?.length) throw new Error("內容被阻擋或無回應");
+                    
+                    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!rawText) throw new Error("API 無效回應");
 
-                    const rawText = data.candidates[0].content.parts[0].text;
-                    const thoughtMatch = rawText.match(/<thought_process>([\s\S]*?)<\/thought_process>/i);
+                    // 經過前端容錯攔截器處理
+                    const parsedData = parseRobustJSON(rawText);
                     
                     setResult({
-                        thought: thoughtMatch ? thoughtMatch[1].trim() : "",
-                        content: rawText.replace(/<thought_process>[\s\S]*?<\/thought_process>/i, "").trim(),
+                        thought: parsedData.thought || "",
+                        content: parsedData.content || "生成內容為空。",
                         timestamp: new Date().toLocaleString('zh-TW')
                     });
                 } catch (e) {
-                    setError(e.message); addToast("處理失敗", "error");
+                    addToast(`處理失敗: ${e.message}`, "error");
                 } finally {
                     setLoading(false);
                 }
             };
 
             const handleChatSend = async () => {
-                if (!chatInput.trim() || !apiKey) return;
-                const userMsg = { role: 'user', text: chatInput };
-                const newMsgs = [...chatMessages, userMsg];
+                if (!chatInput.trim() || !apiKey || !result) return;
+                const newMsgs = [...chatMessages, { role: 'user', text: chatInput }];
                 setChatMessages(newMsgs); setChatInput(''); setChatLoading(true);
 
                 try {
@@ -547,7 +460,7 @@
                     const data = await res.json();
                     setChatMessages([...newMsgs, { role: 'model', text: data.candidates[0].content.parts[0].text }]);
                 } catch (e) {
-                    setChatMessages([...newMsgs, { role: 'model', text: `(Error: ${e.message})` }]);
+                    setChatMessages([...newMsgs, { role: 'model', text: `(發生錯誤: ${e.message})` }]);
                 } finally {
                     setChatLoading(false);
                 }
@@ -558,7 +471,7 @@
                     id: Date.now(), timestamp: currResult.timestamp,
                     role: inquirerRole === "其他 (由使用者自填)" ? (customRole || "自訂身分") : inquirerRole,
                     scenario: scenario === "其他 (由使用者自填)" ? (customScenario || "自訂情境") : scenario,
-                    question: input || "(附件)", thought: currResult.thought, content: currResult.content, chat: chatMessages
+                    question: input || "(附件檔案)", thought: currResult.thought, content: currResult.content, chat: chatMessages
                 };
                 
                 setHistory(prev => {
@@ -573,7 +486,7 @@
                 }
                 setShowHistory(true);
                 if(window.innerWidth < 768) setIsMobileMenuOpen(true);
-                addToast("已儲存", "success");
+                addToast("觀點已安全儲存", "success");
             };
 
             const loadHistory = (item) => {
@@ -585,7 +498,38 @@
                 setShowHistory(false); setIsMobileMenuOpen(false);
             };
 
-            const executeCopy = (html, textFallback) => {
+            // Chat Resizing Logic (Top Bar Dragging)
+            const handleChatResize = useCallback((e) => {
+                if (!chatDragState.current.isDragging) return;
+                if (e.cancelable && e.type.includes('touch')) e.preventDefault();
+                const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                const deltaY = chatDragState.current.startY - currentY;
+                const newHeight = Math.max(250, Math.min(window.innerHeight * 0.85, chatDragState.current.startHeight + deltaY));
+                setChatHeight(newHeight);
+            }, []);
+
+            const stopChatResize = useCallback(() => {
+                chatDragState.current.isDragging = false;
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', handleChatResize);
+                document.removeEventListener('mouseup', stopChatResize);
+                document.removeEventListener('touchmove', handleChatResize);
+                document.removeEventListener('touchend', stopChatResize);
+            }, [handleChatResize]);
+
+            const startChatResize = useCallback((e) => {
+                chatDragState.current.isDragging = true;
+                chatDragState.current.startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                chatDragState.current.startHeight = chatHeight;
+                document.body.style.userSelect = 'none';
+                document.addEventListener('mousemove', handleChatResize, { passive: false });
+                document.addEventListener('mouseup', stopChatResize);
+                document.addEventListener('touchmove', handleChatResize, { passive: false });
+                document.addEventListener('touchend', stopChatResize);
+            }, [chatHeight, handleChatResize, stopChatResize]);
+
+            // Utils: Clipboard & Export
+            const executeCopy = (html) => {
                 try {
                     const temp = document.createElement('div');
                     temp.contentEditable = true; temp.style.position = 'fixed'; temp.style.left = '-9999px'; temp.innerHTML = html;
@@ -600,60 +544,25 @@
 
             const exportToWord = (htmlContent, filename = 'tony_document.doc') => {
                 const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>TONY 觀點</title><style>body { font-family: 'Inter', 'Noto Sans TC', sans-serif; line-height: 1.6; } h1, h2, h3 { color: #0f172a; } p { color: #334155; }</style></head><body>";
-                const footer = "</body></html>";
-                const sourceHTML = header + htmlContent + footer;
-                
-                const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+                const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(header + htmlContent + "</body></html>");
                 const fileDownload = document.createElement("a");
-                document.body.appendChild(fileDownload);
-                fileDownload.href = source;
-                fileDownload.download = filename;
-                fileDownload.click();
-                document.body.removeChild(fileDownload);
+                document.body.appendChild(fileDownload); fileDownload.href = source; fileDownload.download = filename;
+                fileDownload.click(); document.body.removeChild(fileDownload);
             };
 
             const handleExportGDoc = () => {
-                if (!result?.content) return;
-                const html = marked.parse(result.content);
-                if (executeCopy(html)) {
+                if (executeCopy(marked.parse(result.content))) {
                     window.open('https://docs.new', '_blank');
-                    addToast("格式已複製！請在新分頁貼上 (Ctrl+V)", "success");
-                } else { addToast("複製失敗，請手動圈選複製", "error"); }
+                    addToast("格式已複製！請在新文件貼上 (Ctrl+V)", "success");
+                } else addToast("複製失敗", "error");
             };
 
-            const handleCopyChat = () => {
-                if (chatMessages.length === 0) return addToast("尚無對話可複製", "warning");
-                const chatHtml = chatMessages.map(msg => {
-                    const roleName = msg.role === 'user' ? currentActiveRole.split(' ')[0] : 'TONY 老師';
-                    const color = msg.role === 'user' ? '#0f172a' : '#16a34a';
-                    return `<div><h4 style="color: ${color}; margin-bottom: 4px;">${roleName}</h4><div>${marked.parse(msg.text)}</div></div><br/>`;
-                }).join('');
-                
-                if (executeCopy(chatHtml)) {
-                    addToast("對話已複製！可直接貼上至文件", "success");
-                } else {
-                    addToast("複製失敗", "error");
-                }
-            };
-
-            const handleExportChatWord = () => {
-                if (chatMessages.length === 0) return addToast("尚無對話可匯出", "warning");
-                const chatHtml = chatMessages.map(msg => {
-                    const roleName = msg.role === 'user' ? currentActiveRole.split(' ')[0] : 'TONY 老師';
-                    const color = msg.role === 'user' ? '#0f172a' : '#16a34a';
-                    return `<div><h4 style="color: ${color}; margin-bottom: 4px;">${roleName}</h4><div>${marked.parse(msg.text)}</div><hr style="border-top:1px solid #eee; margin:15px 0;"/></div>`;
-                }).join('');
-                exportToWord(`<h2>TONY 諮詢室對話紀錄</h2><hr/>${chatHtml}`, 'TONY_對話紀錄.doc');
-                addToast("對話已匯出為 Word", "success");
-            };
-
+            // Setup Render Vars
             const currentActiveRole = inquirerRole === "其他 (由使用者自填)" ? (customRole || "自訂身分") : inquirerRole;
-            const isApiKeyReady = apiKey.length > 20;
 
             return (
-                <div className="flex h-screen bg-slate-50 overflow-hidden font-sans w-full">
+                <div className="flex h-screen bg-slate-50 overflow-hidden font-sans w-full relative">
                     
-                    {/* Mobile Loader overlay */}
                     {loading && (
                         <div className="full-loader transition-opacity">
                             <div className="w-24 h-24 mb-6 rounded-full border-4 border-amber-350 shadow-[0_0_40px_rgba(251,191,36,0.5)] animate-pulse overflow-hidden">
@@ -661,28 +570,27 @@
                             </div>
                             <div className="flex items-center gap-3 bg-white/80 px-6 py-3 rounded-full shadow-sm backdrop-blur-md">
                                 <Icon name="loader" size={24} className="text-amber-500" />
-                                <span className="text-lg font-bold text-slate-800 tracking-wide">TONY 老師正在思考中...</span>
+                                <span className="text-lg font-bold text-slate-800 tracking-wide">TONY 老師正在深度思考中...</span>
                             </div>
                         </div>
                     )}
 
-                    {/* Mobile Drawer Overlay */}
                     {isMobileMenuOpen && (
                         <div className="fixed inset-0 bg-slate-900/60 z-30 md:hidden backdrop-blur-sm transition-opacity" onClick={() => setIsMobileMenuOpen(false)} />
                     )}
 
-                    {/* Sidebar / Drawer */}
-                    <aside className={`fixed inset-y-0 left-0 z-40 w-[85vw] max-w-sm md:w-80 bg-slate-850 text-slate-100 flex flex-col shadow-2xl transition-transform duration-300 ease-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                        <div className="p-6 border-b border-slate-750 flex flex-col items-center text-center relative shrink-0">
+                    {/* Sidebar */}
+                    <aside className={`fixed inset-y-0 left-0 z-40 w-[85vw] max-w-sm md:w-80 bg-slate-900 text-slate-100 flex flex-col shadow-2xl transition-transform duration-300 ease-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <div className="p-6 border-b border-slate-800 flex flex-col items-center text-center relative shrink-0">
                             <button className="absolute top-4 right-4 text-slate-400 p-2 md:hidden hover:bg-slate-700 rounded-full" onClick={() => setIsMobileMenuOpen(false)}><Icon name="x" size={20}/></button>
                             <div className="w-20 h-20 rounded-full overflow-hidden border-[3px] border-amber-400 shadow-lg mb-3 mt-2">
                                 <img src={TONY_PROFILE.avatarUrl} className="w-full h-full object-cover" />
                             </div>
                             <h2 className="text-lg font-bold text-white mb-0.5 tracking-wide">{TONY_PROFILE.name}</h2>
-                            <p className="text-[10px] text-amber-400/80 font-bold tracking-widest uppercase">Digital Twin V2.9.17</p>
+                            <p className="text-[10px] text-amber-400/80 font-bold tracking-widest uppercase">Digital Twin V2.9.18 EE</p>
                         </div>
                         
-                        <div className="flex border-b border-slate-750 shrink-0 bg-slate-900/30">
+                        <div className="flex border-b border-slate-800 shrink-0 bg-slate-950/50">
                             <button onClick={() => setShowHistory(false)} className={`flex-1 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${!showHistory ? 'text-amber-400 border-b-2 border-amber-400 bg-slate-800/50' : 'text-slate-500 hover:text-slate-300'}`}>關於我</button>
                             <button onClick={() => setShowHistory(true)} className={`flex-1 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${showHistory ? 'text-amber-400 border-b-2 border-amber-400 bg-slate-800/50' : 'text-slate-500 hover:text-slate-300'}`}>紀錄 ({history.length})</button>
                         </div>
@@ -699,14 +607,13 @@
                                 </div>
                             ) : (
                                 <div className="space-y-3 animate-fade-in-up">
-                                    <div className="flex justify-between items-center bg-slate-900/60 p-2.5 rounded-lg text-xs border border-slate-750 mb-2 shadow-inner">
+                                    <div className="flex justify-between items-center bg-slate-950 p-2.5 rounded-lg text-xs border border-slate-800 mb-2 shadow-inner">
                                         <div className="flex items-center gap-1.5 font-medium">
                                             {isSyncing ? <><Icon name="loader" size={14} className="text-blue-400"/> <span className="text-blue-400">Syncing...</span></> : firebaseUser ? <><Icon name="cloud" size={14} className="text-green-400"/> <span className="text-green-400">Cloud Sync On</span></> : <><Icon name="save" size={14} className="text-amber-400"/> <span className="text-amber-400">Local Only</span></>}
                                         </div>
                                     </div>
-                                    {history.length === 0 && !isSyncing && <p className="text-slate-500 text-center text-xs mt-10">尚無分析紀錄</p>}
                                     {history.map(item => (
-                                        <div key={item.id} onClick={() => loadHistory(item)} className="bg-slate-750/50 p-3.5 rounded-xl cursor-pointer hover:bg-slate-700 transition-all duration-200 group relative border border-slate-700/50 hover:border-amber-400/50 hover:shadow-lg">
+                                        <div key={item.id} onClick={() => loadHistory(item)} className="bg-slate-800/50 p-3.5 rounded-xl cursor-pointer hover:bg-slate-750 transition-all duration-200 border border-slate-700/50 hover:border-amber-400/50 hover:shadow-lg">
                                             <div className="flex justify-between items-start mb-1.5">
                                                 <span className="text-[10px] text-amber-400 font-bold uppercase truncate max-w-[70%] bg-amber-400/10 px-1.5 py-0.5 rounded">{item.role}</span>
                                                 <span className="text-[10px] text-slate-500">{item.timestamp.split(' ')[0]}</span>
@@ -718,8 +625,9 @@
                                 </div>
                             )}
                         </div>
-
-                        <div className="bg-slate-900/80 border-t border-slate-800 shrink-0">
+                        
+                        {/* System Config & Brand Footer */}
+                        <div className="bg-slate-950 border-t border-slate-800 shrink-0">
                             <button onClick={() => setIsConfigOpen(!isConfigOpen)} className="w-full p-4 flex items-center justify-between text-slate-400 text-xs font-bold uppercase hover:text-slate-200 transition-colors">
                                 <div className="flex items-center gap-2"><Icon name="settings" size={14} /> <span>System Config</span></div>
                                 <Icon name={isConfigOpen ? 'chevron-down' : 'chevron-up'} size={14} />
@@ -728,18 +636,19 @@
                                 <div className="px-4 pb-4 space-y-3 animate-fade-in-up">
                                     <div className="relative">
                                         <div className="absolute left-3 top-2.5 text-slate-500"><Icon name="key" size={14} /></div>
-                                        <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Gemini API Key" className="w-full pl-9 pr-9 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400 transition-colors" />
-                                        {isApiKeyReady && <div className="absolute right-3 top-2.5 text-green-500"><Icon name="check" size={14} /></div>}
+                                        <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Gemini API Key" className="w-full pl-9 pr-9 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 outline-none focus:border-amber-400" />
                                     </div>
-                                    <input type="text" value={modelName} onChange={e => setModelName(e.target.value)} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 focus:border-amber-400 outline-none transition-colors" />
+                                    <input type="text" value={modelName} onChange={e => setModelName(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-300 focus:border-amber-400 outline-none" />
                                 </div>
                             )}
+                            <div className="text-center py-3 border-t border-slate-800 text-[10px] text-slate-600 font-mono">
+                                &copy; 2020 TonyStudio<br/>(TONY 楊文澤顧問)
+                            </div>
                         </div>
                     </aside>
 
-                    {/* Main Workspace */}
+                    {/* Main Content Area */}
                     <main className="flex-1 flex flex-col min-w-0 h-full relative z-10">
-                        
                         <header className="h-16 glass-header border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 shadow-sm shrink-0">
                             <div className="flex items-center gap-3">
                                 <button className="p-2 -ml-2 text-slate-500 hover:text-slate-800 md:hidden rounded-lg hover:bg-slate-100 transition-colors" onClick={() => setIsMobileMenuOpen(true)}>
@@ -748,14 +657,13 @@
                                 <img src={TONY_PROFILE.logoUrl} alt="Logo" className="h-7 w-auto hidden sm:block" />
                                 <h1 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight">TONY老師您的觀點是什麼?</h1>
                             </div>
-                            <button onClick={handleReset} className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center gap-2 transition-colors border border-blue-200 font-bold text-xs sm:text-sm shadow-sm active:scale-95">
+                            <button onClick={() => {setInput(''); setAttachments([]); setResult(null); setChatMessages([]);}} className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center gap-2 transition-colors border border-blue-200 font-bold text-xs sm:text-sm active:scale-95 shadow-sm">
                                 <Icon name="refresh" size={16} /> <span className="hidden sm:inline">重新提問</span>
                             </button>
                         </header>
 
                         <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-                            
-                            {/* Input Panel (Hidden when result is present on Mobile/Tablet) */}
+                            {/* Input Panel */}
                             <div className={`flex-col bg-white border-r border-slate-200 transition-all duration-300 w-full ${result ? 'hidden lg:flex lg:w-[400px] xl:w-[450px]' : 'flex md:max-w-2xl md:mx-auto md:w-full md:border-x md:shadow-xl'}`}>
                                 <div className="p-5 border-b border-slate-100 space-y-4 shrink-0 bg-slate-50/50">
                                     <div>
@@ -763,18 +671,14 @@
                                         <select value={inquirerRole} onChange={e => setInquirerRole(e.target.value)} className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm outline-none font-medium text-slate-700 shadow-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-shadow">
                                             {INQUIRER_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                                         </select>
-                                        {inquirerRole === "其他 (由使用者自填)" && (
-                                            <input type="text" value={customRole} onChange={e => setCustomRole(e.target.value)} placeholder="輸入自訂身分..." className="w-full p-2.5 mt-2 bg-amber-50/50 border border-amber-200 rounded-lg text-sm outline-none focus:border-amber-400 shadow-inner" />
-                                        )}
+                                        {inquirerRole === "其他 (由使用者自填)" && <input type="text" value={customRole} onChange={e => setCustomRole(e.target.value)} placeholder="輸入自訂身分..." className="w-full p-2.5 mt-2 bg-amber-50/50 border border-amber-200 rounded-lg text-sm outline-none focus:border-amber-400 shadow-inner" />}
                                     </div>
                                     <div>
                                         <label className="block text-[11px] font-bold text-slate-500 uppercase mb-1.5 tracking-wide">應用情境</label>
                                         <select value={scenario} onChange={e => setScenario(e.target.value)} className="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm outline-none text-slate-600 shadow-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-shadow">
                                             {SCENARIOS.map(s => <option key={s} value={s}>{s}</option>)}
                                         </select>
-                                        {scenario === "其他 (由使用者自填)" && (
-                                            <input type="text" value={customScenario} onChange={e => setCustomScenario(e.target.value)} placeholder="輸入自訂情境..." className="w-full p-2.5 mt-2 bg-blue-50/50 border border-blue-200 rounded-lg text-sm outline-none focus:border-blue-400 shadow-inner" />
-                                        )}
+                                        {scenario === "其他 (由使用者自填)" && <input type="text" value={customScenario} onChange={e => setCustomScenario(e.target.value)} placeholder="輸入自訂情境..." className="w-full p-2.5 mt-2 bg-blue-50/50 border border-blue-200 rounded-lg text-sm outline-none focus:border-blue-400 shadow-inner" />}
                                     </div>
                                 </div>
 
@@ -782,108 +686,93 @@
                                     {attachments.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             {attachments.map((file, idx) => (
-                                                <div key={idx} className="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs border border-slate-200 max-w-full shadow-sm">
-                                                    <Icon name="file" size={14} className="text-slate-400"/>
-                                                    <span className="truncate max-w-[120px] font-medium">{file.name}</span>
+                                                <div key={idx} className="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-xs border border-slate-200 shadow-sm">
+                                                    <Icon name="file" size={14} className="text-slate-400"/><span className="truncate max-w-[120px] font-medium">{file.name}</span>
                                                     <button onClick={() => setAttachments(attachments.filter((_, i) => i !== idx))} className="hover:text-red-500 ml-1"><Icon name="x" size={14}/></button>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
-                                    
                                     <div className="relative flex-1 flex flex-col">
                                         <textarea 
                                             ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
                                             placeholder="請輸入議題或貼上網址，TONY 老師將為您深度解析..." 
                                             className="flex-1 w-full p-4 bg-slate-50 border border-slate-200 rounded-xl resize-none focus:bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-400/10 outline-none transition-all text-[15px] leading-relaxed custom-scrollbar shadow-inner"
                                         />
-                                        {isSearchActive && (
-                                            <div className="absolute top-3 right-3 px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded flex items-center gap-1 shadow-sm">
-                                                <Icon name="globe" size={12}/> Search Ready
-                                            </div>
-                                        )}
+                                        {isSearchActive && <div className="absolute top-3 right-3 px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded flex items-center gap-1 shadow-sm"><Icon name="globe" size={12}/> Search Ready</div>}
                                     </div>
-                                    
                                     <div className="mt-4 flex items-center justify-between">
                                         <div className="flex gap-1">
                                             <input type="file" ref={fileInputRef} onChange={e => {setAttachments([...attachments, ...Array.from(e.target.files)]); e.target.value = null;}} className="hidden" multiple />
-                                            <button onClick={() => fileInputRef.current.click()} className="p-2.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200"><Icon name="paperclip" size={20}/></button>
+                                            <button onClick={() => fileInputRef.current.click()} className="p-2.5 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"><Icon name="paperclip" size={20}/></button>
                                         </div>
-                                        <button onClick={handleGenerate} className="px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-white bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 shadow-[0_4px_14px_0_rgba(15,23,42,0.25)] transition-all active:scale-95">
-                                            {isSearchActive ? <Icon name="search" size={18}/> : <Icon name="bot" size={18}/>}
-                                            生成觀點
+                                        <button onClick={handleGenerate} className="px-6 py-3 rounded-xl flex items-center gap-2 font-bold text-white bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 shadow-lg transition-all active:scale-95">
+                                            {isSearchActive ? <Icon name="search" size={18}/> : <Icon name="bot" size={18}/>} 生成觀點
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Output Panel */}
-                            <div className={`flex-1 bg-white flex-col overflow-hidden relative shadow-[-10px_0_15px_-3px_rgba(0,0,0,0.05)] z-10 ${!result ? 'hidden md:flex items-center justify-center bg-slate-50/50' : 'flex'}`}>
+                            {/* Result Panel */}
+                            <div className={`flex-1 bg-white flex-col overflow-hidden relative z-10 ${!result ? 'hidden md:flex items-center justify-center bg-slate-50/50' : 'flex'}`}>
                                 {result ? (
                                     <>
-                                        {/* Action Bar */}
                                         <div className="h-12 border-b border-slate-200 bg-slate-50/80 backdrop-blur flex items-center justify-between px-3 sm:px-6 shrink-0">
                                             <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">Gen: {result.timestamp}</span>
-                                            <div className="flex gap-1 sm:gap-2 w-full sm:w-auto justify-end">
+                                            <div className="flex gap-1 sm:gap-2 justify-end">
                                                 <button onClick={() => addToHistory(result)} className="px-2 py-1 text-slate-600 hover:text-amber-600 hover:bg-amber-50 rounded flex items-center gap-1.5 text-xs font-bold transition-colors"><Icon name="save" size={14} /> 儲存</button>
                                                 <div className="w-px h-4 bg-slate-300 self-center mx-1"></div>
-                                                <button onClick={() => { exportToWord(marked.parse(result.content), 'TONY_觀點.doc'); addToast("已匯出為 Word", "success"); }} className="px-2 py-1 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1.5 text-xs font-bold transition-colors"><Icon name="file" size={14} /> Word</button>
+                                                <button onClick={() => { exportToWord(marked.parse(result.content)); addToast("已匯出 Word", "success"); }} className="px-2 py-1 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1.5 text-xs font-bold transition-colors"><Icon name="file" size={14} /> Word</button>
                                                 <button onClick={handleExportGDoc} className="px-2 py-1 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1.5 text-xs font-bold transition-colors"><Icon name="gdoc" size={14} /> Docs</button>
                                                 <button onClick={() => executeCopy(marked.parse(result.content)) && addToast("已複製 HTML", "success")} className="px-2 py-1 text-slate-600 hover:text-green-600 hover:bg-green-50 rounded flex items-center gap-1.5 text-xs font-bold transition-colors"><Icon name="copy" size={14} /> 複製</button>
                                             </div>
                                         </div>
                                         
-                                        {/* Content Area */}
                                         <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col scroll-smooth">
                                             <div className="p-5 sm:p-8 md:p-10 pb-6 max-w-3xl mx-auto w-full animate-slide-in-right">
                                                 {result.thought && (
                                                     <div className="thinking-block">
-                                                        <div className="thinking-header"><Icon name="eye" size={16} /> System Thinking Process</div>
+                                                        <div className="font-bold text-slate-500 mb-2 flex items-center gap-2 uppercase text-[11px] tracking-widest"><Icon name="eye" size={14} /> System Thinking Process</div>
                                                         <div className="whitespace-pre-wrap leading-relaxed opacity-90">{result.thought}</div>
                                                     </div>
                                                 )}
                                                 <div ref={resultContentRef} className="prose prose-slate prose-img:rounded-xl prose-a:text-blue-600 max-w-none" dangerouslySetInnerHTML={{ __html: marked.parse(result.content) }} />
                                             </div>
                                             
-                                            {/* Chat Section */}
+                                            {/* Chat System */}
                                             <div className="mt-auto bg-slate-100/50 p-2 md:p-4 pb-0 shrink-0">
-                                                <div className="max-w-3xl mx-auto w-full flex flex-col min-h-[250px] max-h-[85vh] overflow-hidden bg-white border-x border-t border-slate-200 rounded-t-xl shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] relative" style={{ height: `${chatHeight}px` }}>
+                                                <div className="max-w-3xl mx-auto w-full flex flex-col min-h-[250px] max-h-[85vh] overflow-hidden bg-white border-x border-t border-slate-200 rounded-t-xl shadow-lg relative" style={{ height: `${chatHeight}px` }}>
                                                     
-                                                    {/* Custom Top Drag Handle */}
-                                                    <div 
-                                                        className="w-full h-4 cursor-ns-resize flex items-center justify-center bg-slate-50 hover:bg-slate-200 transition-colors shrink-0 group z-10"
-                                                        onMouseDown={startChatResize}
-                                                        onTouchStart={startChatResize}
-                                                        title="向上拖曳拉高對話框"
-                                                    >
+                                                    {/* Top Drag Bar */}
+                                                    <div className="w-full h-4 cursor-ns-resize flex items-center justify-center bg-slate-50 hover:bg-slate-200 transition-colors shrink-0 group z-10" onMouseDown={startChatResize} onTouchStart={startChatResize} title="向上拖曳拉高">
                                                         <div className="w-12 h-1 bg-slate-300 group-hover:bg-amber-400 rounded-full transition-colors" />
                                                     </div>
 
                                                     <div className="px-4 py-2 border-b border-slate-200 flex items-center justify-between text-slate-700 font-bold text-xs uppercase tracking-wider bg-white shrink-0">
-                                                        <div className="flex items-center gap-2">
-                                                            <Icon name="message" size={16} className="text-amber-500"/> TONY 諮詢室
-                                                        </div>
+                                                        <div className="flex items-center gap-2"><Icon name="message" size={16} className="text-amber-500"/> TONY 諮詢室</div>
                                                         {chatMessages.length > 0 && (
                                                             <div className="flex items-center gap-2">
-                                                                <button onClick={handleCopyChat} className="px-2 py-1 text-slate-500 hover:text-green-600 hover:bg-green-50 rounded flex items-center gap-1 transition-colors" title="複製對話"><Icon name="copy" size={14}/><span className="hidden sm:inline">複製</span></button>
-                                                                <button onClick={handleExportChatWord} className="px-2 py-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1 transition-colors" title="匯出對話為 Word"><Icon name="download" size={14}/><span className="hidden sm:inline">Word</span></button>
+                                                                <button onClick={() => executeCopy(chatMessages.map(m=>`<div><h4>${m.role==='user'?currentActiveRole.split(' ')[0]:'TONY 老師'}</h4><div>${marked.parse(m.text)}</div></div>`).join('')) && addToast("已複製", "success")} className="px-2 py-1 text-slate-500 hover:text-green-600 hover:bg-green-50 rounded flex items-center gap-1 transition-colors"><Icon name="copy" size={14}/><span className="hidden sm:inline">複製</span></button>
+                                                                <button onClick={() => exportToWord(chatMessages.map(m=>`<div><h4>${m.role==='user'?currentActiveRole.split(' ')[0]:'TONY 老師'}</h4><div>${marked.parse(m.text)}</div></div>`).join(''), 'TONY_對話.doc')} className="px-2 py-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1 transition-colors"><Icon name="download" size={14}/><span className="hidden sm:inline">Word</span></button>
                                                             </div>
                                                         )}
                                                     </div>
+                                                    
                                                     <div ref={chatMessagesRef} className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50/50">
-                                                        {chatMessages.length === 0 && <p className="text-center text-slate-400 text-xs mt-10 opacity-70">對報告有疑問？直接在這裡發問！<br/><span className="text-[10px] mt-1 inline-block">(您可以直接拖曳視窗正上方的橫條，往上拉高對話框)</span></p>}
+                                                        {chatMessages.length === 0 && <p className="text-center text-slate-400 text-xs mt-10 opacity-70">對報告有疑問？直接在這裡發問！</p>}
                                                         {chatMessages.map((msg, idx) => (
                                                             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-fade-in-up`} style={{animationDuration: '0.2s'}}>
                                                                 <span className="text-[10px] text-slate-400 mb-1 px-1 font-medium">{msg.role === 'user' ? currentActiveRole.split(' ')[0] : 'TONY 老師'}</span>
-                                                                <div className={`chat-bubble ${msg.role === 'user' ? 'chat-user' : (currentActiveRole.includes('Myself') ? 'chat-self' : 'chat-bot')}`} dangerouslySetInnerHTML={{ __html: marked.parse(msg.text) }} />
+                                                                <div className={`chat-bubble ${msg.role === 'user' ? 'chat-user' : 'chat-bot'}`} dangerouslySetInnerHTML={{ __html: marked.parse(msg.text) }} />
                                                             </div>
                                                         ))}
                                                         {chatLoading && <div className="flex items-center gap-2 text-slate-400 text-xs ml-2 animate-pulse"><Icon name="loader" size={14} /> 老師輸入中...</div>}
                                                         <div ref={chatEndRef} className="h-2"/>
                                                     </div>
+                                                    
                                                     <div className="p-3 bg-white border-t border-slate-200 shrink-0 relative">
                                                         <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleChatSend()} placeholder="還有什麼想追問的嗎？" className="w-full pl-4 pr-12 py-3 bg-slate-100/50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-400/20 focus:border-amber-400 outline-none transition-all" disabled={chatLoading} />
-                                                        <button onClick={handleChatSend} disabled={chatLoading || !chatInput.trim()} className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed shadow-sm"><Icon name="send" size={16} /></button>
+                                                        <button onClick={handleChatSend} disabled={chatLoading || !chatInput.trim()} className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed shadow-sm transition-colors"><Icon name="send" size={16} /></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -891,9 +780,7 @@
                                     </>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center text-slate-400 p-8 h-full">
-                                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 text-slate-300 shadow-sm border border-slate-100 rotate-3 hover:rotate-0 transition-transform">
-                                            <Icon name="bot" size={40} />
-                                        </div>
+                                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 text-slate-300 shadow-sm border border-slate-100 rotate-3 hover:rotate-0 transition-transform"><Icon name="bot" size={40} /></div>
                                         <h3 className="text-lg font-bold text-slate-500 mb-2">等待指令中...</h3>
                                         <p className="text-sm text-center max-w-xs leading-relaxed opacity-80">設定提問身分與情境，輸入文字或上傳資料，我將為您產生專屬洞察。</p>
                                     </div>
@@ -902,6 +789,7 @@
                         </div>
                     </main>
                     
+                    {/* Toast Notification Container */}
                     <div className="fixed top-0 right-0 p-4 z-[100] flex flex-col gap-2 pointer-events-none w-full md:w-auto items-center md:items-end">
                         {toasts.map(t => <div key={t.id} className="pointer-events-auto w-auto max-w-md"><Toast message={t.message} type={t.type} onClose={() => removeToast(t.id)} /></div>)}
                     </div>

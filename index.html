@@ -379,23 +379,17 @@
                     const activeRole = inquirerRole === "其他 (由使用者自填)" ? (customRole || "自訂身分") : inquirerRole;
                     const attachmentParts = await Promise.all(attachments.map(fileToGenerativePart));
 
-                    // 核心 Prompt 重構 (嚴格 JSON 結構限制)
+                    // 核心 Prompt 重構 (保留結構限制，但交由前端容錯處理)
                     const systemPrompt = `[SYSTEM INSTRUCTION - 數位孿生核心協議]
 你現在**完全就是** TONY 楊文澤老師本人。你是一位經驗豐富、溫暖善良且熱愛創新的資深顧問。
 **[聯網搜尋指令]** 若使用者輸入包含網址，務必使用 Google Search 工具查證。
 **[支援格式]** 支援 Mermaid 圖表 (\`\`\`mermaid) 及 LaTeX 數學公式 ($...$ 或 $$...$$)。
 
 **[輸出規範 (CRITICAL)]**
-你必須以純 JSON 格式輸出，絕對不要包含任何 Markdown 代碼塊 (如 \`\`\`json)。
-JSON 結構必須精確包含以下兩個欄位：
+你必須以純 JSON 格式輸出，結構必須精確包含以下兩個欄位：
 {
   "thought": "這裡填寫你的底層思考過程 (1. 輸入檢核... 2. 深度挖掘...)",
   "content": "這裡填寫你要回覆使用者的主要內容，請使用 Markdown 語法排版，並包含：\n## 💡 TONY 的初步觀點\n## 🚀 TONY 的深度洞察"
-}
-範例輸出:
-{
-  "thought": "1. 分析使用者需求... 2. 連結行銷漏斗理論...",
-  "content": "## 💡 TONY 的初步觀點\n這是一個很好的問題... \n## 🚀 TONY 的深度洞察\n本質上..."
 }
 
 **[社交對頻]** 提問者：${activeRole} | 情境：${activeScenario}`;
@@ -410,20 +404,24 @@ JSON 結構必須精確包含以下兩個欄位：
                             contents: [{ parts: userParts }],
                             systemInstruction: { parts: [{ text: systemPrompt }] },
                             tools: [{ google_search: {} }],
-                            // 嚴格錨定輸出格式，減輕前端解析負擔
+                            // 移除 responseMimeType，避免與 tools 衝突。保留高隨機性以獲取深度洞察。
                             generationConfig: { 
-                                temperature: 0.85, topK: 40, topP: 0.95, maxOutputTokens: 8192,
-                                responseMimeType: "application/json" 
+                                temperature: 0.85, topK: 40, topP: 0.95, maxOutputTokens: 8192
                             }
                         })
                     });
 
-                    if (!res.ok) throw new Error(`API Error: ${res.status}`);
+                    if (!res.ok) {
+                        if (res.status === 404) throw new Error(`找不到模型 (${modelName})，請至 System Config 確認模型名稱 (建議使用 gemini-2.5-flash)`);
+                        throw new Error(`API 連線異常: ${res.status}`);
+                    }
+                    
                     const data = await res.json();
                     if (data.error) throw new Error(data.error.message);
+                    if (data.candidates?.[0]?.finishReason === 'SAFETY') throw new Error("您的輸入觸發了 Google API 的安全審查機制，內容遭攔截。");
                     
                     const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (!rawText) throw new Error("API 無效回應");
+                    if (!rawText) throw new Error("API 回傳內容為空，可能是模型超載或生成失敗。");
 
                     // 經過前端容錯攔截器處理
                     const parsedData = parseRobustJSON(rawText);
@@ -456,9 +454,19 @@ JSON 結構必須精確包含以下兩個欄位：
                             ], tools: [{ google_search: {} }]
                         })
                     });
-                    if (!res.ok) throw new Error("API Error");
+                    
+                    if (!res.ok) {
+                        if (res.status === 404) throw new Error(`找不到模型 (${modelName})`);
+                        throw new Error(`API 連線異常: ${res.status}`);
+                    }
+                    
                     const data = await res.json();
-                    setChatMessages([...newMsgs, { role: 'model', text: data.candidates[0].content.parts[0].text }]);
+                    if (data.candidates?.[0]?.finishReason === 'SAFETY') throw new Error("內容觸發安全審查機制，遭攔截。");
+                    
+                    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!replyText) throw new Error("API 回傳內容為空。");
+                    
+                    setChatMessages([...newMsgs, { role: 'model', text: replyText }]);
                 } catch (e) {
                     setChatMessages([...newMsgs, { role: 'model', text: `(發生錯誤: ${e.message})` }]);
                 } finally {

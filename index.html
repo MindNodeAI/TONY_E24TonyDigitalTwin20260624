@@ -254,7 +254,7 @@
             
             // Core Configs (Enforced defaults for stability)
             const [apiKey, setApiKey] = useState('');
-            const [modelName, setModelName] = useState('gemini-3.8-flash'); 
+            const [modelName, setModelName] = useState('gemini-4-hydrogen'); 
             const [scenario, setScenario] = useState(SCENARIOS[0]);
             const [customScenario, setCustomScenario] = useState('');
             const [inquirerRole, setInquirerRole] = useState(INQUIRER_ROLES[0]); 
@@ -342,8 +342,8 @@
                 if (storedKey) setApiKey(storedKey);
                 
                 const storedModel = safeStorage.getItem('tony_vibe_model');
-                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('3.5')) setModelName(storedModel);
-                else setModelName('gemini-3.8-flash'); // Auto-upgrade
+                if (storedModel && !storedModel.includes('2.5') && !storedModel.includes('3.5') && !storedModel.includes('3.8')) setModelName(storedModel);
+                else setModelName('gemini-4-hydrogen'); // Auto-upgrade
 
                 setScenario(safeStorage.getItem('tony_vibe_scenario') || SCENARIOS[0]);
                 setInquirerRole(safeStorage.getItem('tony_vibe_role') || INQUIRER_ROLES[0]);
